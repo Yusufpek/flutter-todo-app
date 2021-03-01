@@ -1,0 +1,141 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_todo_app/components/colors.dart';
+import 'package:flutter_todo_app/ui/todo_detail_screen.dart';
+
+import '../../models/todo_model.dart';
+import '../../services/db_helper.dart';
+
+class TodoListWidget extends StatefulWidget {
+  final Todo todo;
+
+  const TodoListWidget({Key key, this.todo}) : super(key: key);
+
+  @override
+  _TodoListWidgetState createState() => _TodoListWidgetState(todo);
+}
+
+class _TodoListWidgetState extends State<TodoListWidget> {
+  final Todo todo;
+  _TodoListWidgetState(this.todo);
+
+  DbHelper helper = DbHelper();
+  bool widgetDetail = true;
+
+  @override
+  Widget build(BuildContext context) {
+    IconData icon = todo.isDone ? Icons.done : Icons.topic_outlined;
+    var _style = Theme.of(context);
+    return Padding(
+      padding: EdgeInsets.all(8),
+      child: widgetDetail
+          ? Container(
+              decoration: BoxDecoration(
+                border: Border.all(width: 3, color: Theme.of(context).primaryColor),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: _style.accentColor,
+                  child: Icon(icon, color: todoBlack),
+                ),
+                title: Text(
+                  '${widget.todo.title}',
+                  style: _style.textTheme.headline1,
+                ),
+                subtitle: Text('${widget.todo.description}', style: _style.textTheme.subtitle1),
+                isThreeLine: false,
+                trailing: Icon(Icons.more_vert, color: todoBlack),
+                onTap: () => Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => TodoDetailScreen(id: todo.id))),
+                onLongPress: _toogleWidgetSit,
+              ),
+            )
+          : InkWell(
+              child: Container(
+                width: double.maxFinite - 16,
+                height: MediaQuery.of(context).size.height * 0.09,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        color: _style.primaryColorLight,
+                        child: IconButton(
+                          onPressed: _toogleWidgetSit,
+                          color: _style.primaryColorDark,
+                          icon: Icon(Icons.chevron_left),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        color: _style.primaryColor,
+                        child: IconButton(
+                          onPressed: _toogleTodosDone,
+                          color: _style.accentColor,
+                          icon: Icon(Icons.done),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        color: _style.accentColor,
+                        child: IconButton(
+                          onPressed: _showDialog,
+                          color: errorRed,
+                          icon: Icon(Icons.delete_forever),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onLongPress: _toogleWidgetSit),
+    );
+  }
+
+  void _toogleWidgetSit() async {
+    widgetDetail = !widgetDetail;
+    setState(() {});
+  }
+
+  void _toogleTodosDone() async {
+    todo.isDone = !todo.isDone;
+    await helper.updateTodo(todo);
+    _toogleWidgetSit();
+  }
+
+  Future<void> _showDialog() async {
+    TextStyle _style = Theme.of(context).textTheme.headline1;
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Deleting ${todo.title}.',
+            style: _style,
+          ),
+          content: Text(
+            'Are you sure to delete ${todo.title} ?',
+            style: _style,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Yes !'),
+              onPressed: () async {
+                print('Todo id\'si: ${todo.id}');
+                await helper.deleteTodo(todo.id);
+                Navigator.of(context).pop();
+                print('silindi !');
+                _toogleWidgetSit();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}

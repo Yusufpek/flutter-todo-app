@@ -6,15 +6,6 @@ class Todo {
   bool isDone;
 
   Todo(this.id, this.title, this.description, this.date, {this.isDone: false});
-  //Todo.withId(this.id, this.title, this.description, this.date,
-  //  {this.isDone: false});
-
-/*
-  int get id => _id;
-  String get title => _title;
-  String get description => _description;
-  String get date => _date;
-*/
 
   factory Todo.fromMap(Map<String, dynamic> data) {
     return Todo(

@@ -7,10 +7,10 @@ ThemeData buildTodoTheme() {
   return tdLight.copyWith(
     accentColor: todoAmber,
     primaryColor: todoPurpleDark,
+    highlightColor: todoAmberLight,
     scaffoldBackgroundColor: todoBackgroundWhite,
     cardColor: todoBackgroundWhite,
     errorColor: errorRed,
-    textSelectionColor: todoBlack,
     primaryTextTheme: TextTheme(
       subtitle1: TextStyle(
           color: todoBlack, fontFamily: 'Rubik', fontWeight: FontWeight.w300, fontSize: 25),

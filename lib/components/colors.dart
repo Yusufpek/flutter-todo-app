@@ -11,6 +11,6 @@ const Color todoWhite = Colors.white;
 const Color todoPurple = Colors.purple;
 const Color todoAmber = Color(0xFFFFBF00);
 const Color todoPurple8 = Color(0xFF800080);
-const Color todoPurpBlack = Color(0xFF261c26);
+const Color todoAmberLight = Colors.amberAccent;
 
 const Color errorRed = Colors.red;

@@ -52,7 +52,7 @@ class DbHelper {
   }
 
   Future<List<Todo>> getAllTodos() async {
-    List<Todo> _todos = List<Todo>();
+    List<Todo> _todos = [];
     Database db = await this.db;
     var result = await db.rawQuery('SELECT * FROM $tblTodo');
     result.forEach((d) => _todos.add(Todo.fromMap(d)));
@@ -60,7 +60,7 @@ class DbHelper {
   }
 
   Future<List<Todo>> getDoneTodos() async {
-    List<Todo> _todos = List<Todo>();
+    List<Todo> _todos = [];
     Database db = await this.db;
     var result = await db.rawQuery(
       'SELECT * FROM $tblTodo WHERE $colDone = ?',
@@ -71,7 +71,7 @@ class DbHelper {
   }
 
   Future<List<Todo>> getUnDoneTodos() async {
-    List<Todo> _todos = List<Todo>();
+    List<Todo> _todos = [];
     Database db = await this.db;
     var result = await db.rawQuery(
       'SELECT * FROM $tblTodo WHERE $colDone = ?',

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_todo_app/components/colors.dart';
-import 'package:flutter_todo_app/ui/todo_detail_screen.dart';
 
+import '../../components/colors.dart';
 import '../../models/todo_model.dart';
 import '../../services/db_helper.dart';
+import '../../ui/todo_detail_screen.dart';
+import '../functions.dart';
 
 class TodoListWidget extends StatefulWidget {
   final Todo todo;
@@ -46,7 +47,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
                 isThreeLine: false,
                 trailing: Icon(Icons.more_vert, color: todoBlack),
                 onTap: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => TodoDetailScreen(id: todo.id))),
+                    context, MaterialPageRoute(builder: (_) => TodoDetailScreen(todo: todo))),
                 onLongPress: _toogleWidgetSit,
               ),
             )
@@ -72,7 +73,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
                       child: Container(
                         color: _style.primaryColor,
                         child: IconButton(
-                          onPressed: _toogleTodosDone,
+                          onPressed: () => toogleTodosDone(todo, helper, _toogleWidgetSit),
                           color: _style.accentColor,
                           icon: Icon(Icons.done),
                         ),
@@ -99,12 +100,6 @@ class _TodoListWidgetState extends State<TodoListWidget> {
   void _toogleWidgetSit() async {
     widgetDetail = !widgetDetail;
     setState(() {});
-  }
-
-  void _toogleTodosDone() async {
-    todo.isDone = !todo.isDone;
-    await helper.updateTodo(todo);
-    _toogleWidgetSit();
   }
 
   Future<void> _showDialog() async {

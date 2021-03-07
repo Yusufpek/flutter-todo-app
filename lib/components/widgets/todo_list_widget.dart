@@ -8,8 +8,8 @@ import '../functions.dart';
 
 class TodoListWidget extends StatefulWidget {
   final Todo todo;
-
-  const TodoListWidget({Key key, this.todo}) : super(key: key);
+  final GlobalKey scaffoldKey;
+  const TodoListWidget({Key key, this.todo, this.scaffoldKey}) : super(key: key);
 
   @override
   _TodoListWidgetState createState() => _TodoListWidgetState(todo);
@@ -43,7 +43,11 @@ class _TodoListWidgetState extends State<TodoListWidget> {
                   '${widget.todo.title}',
                   style: _style.textTheme.headline1,
                 ),
-                subtitle: Text('${widget.todo.description}', style: _style.textTheme.subtitle1),
+                subtitle: Text(
+                  '${widget.todo.description}',
+                  maxLines: 1,
+                  style: _style.textTheme.subtitle1,
+                ),
                 isThreeLine: false,
                 trailing: Icon(Icons.more_vert, color: todoBlack),
                 onTap: () => Navigator.push(
@@ -119,12 +123,20 @@ class _TodoListWidgetState extends State<TodoListWidget> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Yes !'),
+              child: Text('Yes !', style: Theme.of(context).textTheme.subtitle1),
               onPressed: () async {
-                print('Todo id\'si: ${todo.id}');
-                await helper.deleteTodo(todo.id);
+                await helper.deleteTodo(widget.todo.id);
                 Navigator.of(context).pop();
-                print('silindi !');
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(
+                'No !',
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
                 _toogleWidgetSit();
               },
             ),

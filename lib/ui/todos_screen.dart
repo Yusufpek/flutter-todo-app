@@ -5,30 +5,69 @@ import '../components/widgets/todo_list_widget.dart';
 import '../models/todo_model.dart';
 import '../services/db_helper.dart';
 
-class TodosScreen extends StatelessWidget {
+class TodosScreen extends StatefulWidget {
   final String whichTodo;
-
   TodosScreen({Key key, this.whichTodo}) : super(key: key);
 
+  @override
+  _TodosScreenState createState() => _TodosScreenState();
+}
+
+class _TodosScreenState extends State<TodosScreen> {
+  GlobalKey scaffoldKey;
+
   final DbHelper helper = DbHelper();
-  Future<List<Todo>> _getTodos(String s) async {
+  List todos;
+  bool isTodosOk = false;
+  Future<void> _getTodos(String s) async {
     if (s == 'Undone') {
-      return await helper.getUnDoneTodos();
+      todos = await helper.getUnDoneTodos();
     } else if (s == 'Done') {
-      return await helper.getDoneTodos();
+      todos = await helper.getDoneTodos();
     } else {
-      return helper.getAllTodos();
+      todos = await helper.getAllTodos();
     }
+    isTodosOk = true;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    _getTodos(widget.whichTodo);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
-        title: Text('$whichTodo Todos'),
+        title: Text('${widget.whichTodo} Todos'),
       ),
-      body: FutureBuilder(
-        future: _getTodos(whichTodo),
+      body: isTodosOk
+          ? todos.length > 0
+              ? Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: todos.length,
+                        itemBuilder: (_, i) => TodoListWidget(
+                          todo: todos[i],
+                          scaffoldKey: scaffoldKey,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : Center(child: Text('You don\'t have any task !'))
+          : Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Theme.of(context).accentColor,
+              ),
+            ),
+      /*
+      FutureBuilder(
+        future: _getTodos(widget.whichTodo),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             print((snapshot.data as List).length);
@@ -38,7 +77,10 @@ class TodosScreen extends StatelessWidget {
                   Expanded(
                     child: ListView.builder(
                       itemCount: (snapshot.data as List).length,
-                      itemBuilder: (_, i) => TodoListWidget(todo: snapshot.data[i]),
+                      itemBuilder: (_, i) => TodoListWidget(
+                        todo: snapshot.data[i],
+                        scaffoldKey: scaffoldKey,
+                      ),
                     ),
                   ),
                 ],
@@ -54,7 +96,7 @@ class TodosScreen extends StatelessWidget {
             ));
           }
         },
-      ),
+      ),*/
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         child: Icon(Icons.add),
@@ -64,3 +106,4 @@ class TodosScreen extends StatelessWidget {
     );
   }
 }
+//https://google.qualtrics.com/jfe/form/SV_eKYon5R5FfrS38G?Source=VSCode&ClientID=22a16133-4c7c-42ad-8280-0451e47b32aa
